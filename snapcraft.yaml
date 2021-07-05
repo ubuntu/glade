@@ -28,6 +28,7 @@ apps:
 parts:
   glade:
     source: https://gitlab.gnome.org/GNOME/glade.git
+    source-branch: glade-3-38
     source-type: git
     parse-info: [usr/share/metainfo/org.gnome.Glade.appdata.xml]
     plugin: meson
