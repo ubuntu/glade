@@ -2,7 +2,7 @@ name: glade
 adopt-info: glade
 grade: stable # must be 'stable' to release into candidate/stable channels
 confinement: strict
-base: core18
+base: core20
 
 slots:
   # for GtkApplication registration
@@ -13,7 +13,7 @@ slots:
 apps:
   glade:
     command: usr/bin/glade
-    extensions: [gnome-3-34]
+    extensions: [gnome-3-38]
     environment:
       GLADE_CATALOG_SEARCH_PATH: "$SNAP/usr/share/glade/catalogs"
       GLADE_MODULE_SEARCH_PATH: "$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/glade/modules"
@@ -32,15 +32,16 @@ parts:
     source-type: git
     parse-info: [usr/share/metainfo/org.gnome.Glade.appdata.xml]
     plugin: meson
+    meson-version: "0.55.0"
     meson-parameters:
       - --prefix=/usr
     override-pull: |
       snapcraftctl pull
       snapcraftctl set-version $(git describe --tags | sed 's/GLADE_//g'|sed 's/_/./g')
     override-build: |
-      sed -i.bak -e 's|=org.gnome.Glade$|=snap.$SNAPCRAFT_PROJECT_NAME.org.gnome.Glade|g' data/org.gnome.Glade.desktop.in.in
-      sed -i.bak '\|<id>org.gnome.Glade</id>|a<icon type="stock">snap.$SNAPCRAFT_PROJECT_NAME.org.gnome.Glade</icon>' data/org.gnome.Glade.appdata.xml.in
-      sed -i.bak -e 's|symlink_media: true,|symlink_media: false,|g' help/meson.build
+      sed -i.bak -e 's|=org.gnome.Glade$|=snap.$SNAPCRAFT_PROJECT_NAME.org.gnome.Glade|g' $SNAPCRAFT_PART_SRC/data/org.gnome.Glade.desktop.in.in
+      sed -i.bak '\|<id>org.gnome.Glade</id>|a<icon type="stock">snap.$SNAPCRAFT_PROJECT_NAME.org.gnome.Glade</icon>' $SNAPCRAFT_PART_SRC/data/org.gnome.Glade.appdata.xml.in
+      sed -i.bak -e 's|symlink_media: true,|symlink_media: false,|g' $SNAPCRAFT_PART_SRC/help/meson.build
       snapcraftctl build
       mkdir -p $SNAPCRAFT_PART_INSTALL/meta/gui/
       cp $SNAPCRAFT_PART_SRC/data/icons/hicolor/scalable/apps/org.gnome.Glade.svg $SNAPCRAFT_PART_INSTALL/meta/gui/icon.svg
@@ -49,17 +50,18 @@ parts:
       do
         mv $i "`dirname $i`/snap.$SNAPCRAFT_PROJECT_NAME.`basename $i`"
       done
+
     build-packages:
       - gnome-common
       - libxml2-dev
       - libglib2.0-dev
       - libgtk-3-dev
       - python-gi-dev
-      - python3.6-dev
+      - python3-dev
       - gtk-doc-tools
       - yelp-tools
       - intltool
       - gobject-introspection
       - libgirepository1.0-dev
     stage-packages:
-      - libpython3.6
+      - libpython3.9
