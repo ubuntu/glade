@@ -2,7 +2,7 @@ name: glade
 adopt-info: glade
 grade: stable # must be 'stable' to release into candidate/stable channels
 confinement: strict
-base: core20
+base: core22
 
 slots:
   # for GtkApplication registration
@@ -13,10 +13,10 @@ slots:
 apps:
   glade:
     command: usr/bin/glade
-    extensions: [gnome-3-38]
+    extensions: [gnome]
     environment:
       GLADE_CATALOG_SEARCH_PATH: "$SNAP/usr/share/glade/catalogs"
-      GLADE_MODULE_SEARCH_PATH: "$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/glade/modules"
+      GLADE_MODULE_SEARCH_PATH: "$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/glade/modules"
       GLADE_PIXMAP_DIR: "$SNAP/usr/share/glade/pixmaps"
     plugs:
       - home
@@ -28,40 +28,27 @@ apps:
 parts:
   glade:
     source: https://gitlab.gnome.org/GNOME/glade.git
-    source-branch: glade-3-38
+    source-tag: 'GLADE_3_38_2'
     source-type: git
     parse-info: [usr/share/metainfo/org.gnome.Glade.appdata.xml]
     plugin: meson
-    meson-version: "0.55.0"
     meson-parameters:
       - --prefix=/usr
+      - --buildtype=release
+      - -Dman=false
     override-pull: |
-      snapcraftctl pull
-      snapcraftctl set-version $(git describe --tags | sed 's/GLADE_//g'|sed 's/_/./g')
+      craftctl default
+      craftctl set version=$(git describe --tags | sed 's/GLADE_//g'|sed 's/_/./g')
+      patch -p 1 < $CRAFT_PROJECT_DIR/patches/patch1.diff
     override-build: |
-      sed -i.bak -e 's|=org.gnome.Glade$|=snap.$SNAPCRAFT_PROJECT_NAME.org.gnome.Glade|g' $SNAPCRAFT_PART_SRC/data/org.gnome.Glade.desktop.in.in
-      sed -i.bak '\|<id>org.gnome.Glade</id>|a<icon type="stock">snap.$SNAPCRAFT_PROJECT_NAME.org.gnome.Glade</icon>' $SNAPCRAFT_PART_SRC/data/org.gnome.Glade.appdata.xml.in
-      sed -i.bak -e 's|symlink_media: true,|symlink_media: false,|g' $SNAPCRAFT_PART_SRC/help/meson.build
-      snapcraftctl build
-      mkdir -p $SNAPCRAFT_PART_INSTALL/meta/gui/
-      cp $SNAPCRAFT_PART_SRC/data/icons/hicolor/scalable/apps/org.gnome.Glade.svg $SNAPCRAFT_PART_INSTALL/meta/gui/icon.svg
-      cp -r $SNAPCRAFT_PART_INSTALL/usr/share/icons $SNAPCRAFT_PART_INSTALL/meta/gui/
-      for i in `find $SNAPCRAFT_PART_INSTALL/meta/gui/icons -name "*.svg" -o -name "*.png"`
+      sed -i.bak -e 's|=org.gnome.Glade$|=snap.$CRAFT_PROJECT_NAME.org.gnome.Glade|g' $CRAFT_PART_SRC/data/org.gnome.Glade.desktop.in.in
+      sed -i.bak '\|<id>org.gnome.Glade</id>|a<icon type="stock">snap.$CRAFT_PROJECT_NAME.org.gnome.Glade</icon>' $CRAFT_PART_SRC/data/org.gnome.Glade.appdata.xml.in
+      sed -i.bak -e 's|symlink_media: true,|symlink_media: false,|g' $CRAFT_PART_SRC/help/meson.build
+      craftctl default
+      mkdir -p $CRAFT_PART_INSTALL/meta/gui/
+      cp $CRAFT_PART_SRC/data/icons/hicolor/scalable/apps/org.gnome.Glade.svg $CRAFT_PART_INSTALL/meta/gui/icon.svg
+      cp -r $CRAFT_PART_INSTALL/usr/share/icons $CRAFT_PART_INSTALL/meta/gui/
+      for i in `find $CRAFT_PART_INSTALL/meta/gui/icons -name "*.svg" -o -name "*.png"`
       do
-        mv $i "`dirname $i`/snap.$SNAPCRAFT_PROJECT_NAME.`basename $i`"
+        mv $i "`dirname $i`/snap.$CRAFT_PROJECT_NAME.`basename $i`"
       done
-
-    build-packages:
-      - gnome-common
-      - libxml2-dev
-      - libglib2.0-dev
-      - libgtk-3-dev
-      - python-gi-dev
-      - python3-dev
-      - gtk-doc-tools
-      - yelp-tools
-      - intltool
-      - gobject-introspection
-      - libgirepository1.0-dev
-    stage-packages:
-      - libpython3.9
