@@ -36,9 +36,6 @@ parts:
       - --prefix=/usr
       - --buildtype=release
       - -Dman=false
-    override-pull: |
-      craftctl default
-      craftctl set version=$(git describe --tags | sed 's/GLADE_//g'|sed 's/_/./g')
     override-build: |
       sed -i.bak -e 's|=org.gnome.Glade$|=snap.$CRAFT_PROJECT_NAME.org.gnome.Glade|g' $CRAFT_PART_SRC/data/org.gnome.Glade.desktop.in.in
       sed -i.bak '\|<id>org.gnome.Glade</id>|a<icon type="stock">snap.$CRAFT_PROJECT_NAME.org.gnome.Glade</icon>' $CRAFT_PART_SRC/data/org.gnome.Glade.appdata.xml.in
