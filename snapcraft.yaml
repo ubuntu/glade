@@ -35,6 +35,7 @@ parts:
 #     no-9x-revisions: true
 #     format: 'GLADE_%M_%m_%R'
     source-type: git
+    source-depth: 1
     parse-info: [usr/share/metainfo/org.gnome.Glade.appdata.xml]
     plugin: meson
     meson-parameters:
