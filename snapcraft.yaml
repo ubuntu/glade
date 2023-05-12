@@ -29,6 +29,11 @@ parts:
   glade:
     source: https://gitlab.gnome.org/GNOME/glade.git
     source-tag: 'GLADE_3_40_0'
+# ext:updatesnap
+#   version-format:
+#     lower-than: '3.42'
+#     no-9x-revisions: true
+#     format: 'GLADE_%M_%m_%R'
     source-type: git
     parse-info: [usr/share/metainfo/org.gnome.Glade.appdata.xml]
     plugin: meson
