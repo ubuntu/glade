@@ -1,8 +1,9 @@
 name: glade
 adopt-info: glade
+license: "GPL-3.0+"
 grade: stable # must be 'stable' to release into candidate/stable channels
 confinement: strict
-base: core22
+base: core24
 
 slots:
   # for GtkApplication registration
