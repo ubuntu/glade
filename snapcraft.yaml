@@ -47,6 +47,8 @@ parts:
       sed -i.bak -e 's|=org.gnome.Glade$|=snap.$CRAFT_PROJECT_NAME.org.gnome.Glade|g' $CRAFT_PART_SRC/data/org.gnome.Glade.desktop.in.in
       sed -i.bak '\|<id>org.gnome.Glade</id>|a<icon type="stock">snap.$CRAFT_PROJECT_NAME.org.gnome.Glade</icon>' $CRAFT_PART_SRC/data/org.gnome.Glade.appdata.xml.in
       sed -i.bak -e 's|symlink_media: true,|symlink_media: false,|g' $CRAFT_PART_SRC/help/meson.build
+      # Remove .git in order to avoid broken vcs_tag branch in src/meson.build
+      rm -rf $CRAFT_PART_BUILD/.git $CRAFT_PART_SRC/.git || :
       craftctl default
       mkdir -p $CRAFT_PART_INSTALL/meta/gui/
       cp $CRAFT_PART_SRC/data/icons/hicolor/scalable/apps/org.gnome.Glade.svg $CRAFT_PART_INSTALL/meta/gui/icon.svg
